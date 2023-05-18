@@ -1,0 +1,279 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+
+Group ID: Group 1
+
+Member1 : Vilok C Bhat 
+USN     : 1NT20IS187
+
+Member2 : Byalalli Jagadish
+USN     : 1NT20IS037
+
+
+```{r}
+library(dplyr)        # For data manipulation
+library(ggplot2)      # For data visualization
+library(caret)        # For machine learning functions
+
+```
+
+```{r}
+# Assuming the dataset is in CSV format
+dataset <- read.csv("D:/Download/gender_submission.csv", stringsAsFactors = FALSE)
+
+```
+
+```{r}
+getwd()
+str(dataset)
+```
+
+```{r}
+head(dataset)
+```
+
+```{r}
+tail(dataset)
+```
+
+```{r}
+summary(dataset)
+```
+```{r}
+sum(dataset)
+```
+```{r}
+train <- read.csv("D:/Download/train.csv", stringsAsFactors = F, header = TRUE)
+```
+
+```{r}
+head(train)
+str(train)
+```
+```{r}
+ls()
+ls(pattern = "d")
+```
+pattern match
+```{r}
+ls(pattern='^t')
+```
+```{r}
+ls(pattern='a$')
+```
+```{r}
+ls(pattern = '^b|^e')
+```
+```{r}
+ls(pattern='e.a')
+```
+deleting the list 
+```{r}
+rm(fw)
+```
+
+```{r}
+test <- read.csv("D:/Download/test.csv", stringsAsFactors = F)
+head(test)
+str(test)
+```
+```{r}
+test
+```
+```{r}
+colnames(train)
+```
+```{r}
+row.names(train)
+```
+```{r}
+class(test)
+```
+```{r}
+temp1=as.character(train$Survived)
+class(temp1)
+```
+```{r}
+temp2=as.integer(temp1)
+class(temp2)
+temp2
+
+```
+```{r}
+temp3=as.numeric(temp2)
+class(temp3)
+```
+```{r}
+temp4=as.factor(temp3)
+class(temp4)
+```
+```{r}
+dataset[1]
+```
+```{r}
+ls.str(pattern = 'data')
+```
+history save
+#```{r}
+#savehistory(file = '.Rhistory')
+#loadhistory(file='.Rhistory')
+#```
+
+```{r}
+max(dataset)
+```
+```{r}
+which(dataset==max(dataset))
+```
+generating sequence
+```{r}
+dataset[seq(1, length(dataset), 2)]
+```
+```{r}
+temp=c("sec a","sec b","sec a","sec b","sec a","sec c","sec c")
+sort(temp)
+```
+```{r}
+sort(temp,decreasing = TRUE)
+```
+
+```{r}
+rank(temp)
+```
+```{r}
+order(temp)
+```
+cumulative sum
+```{r}
+cumsum(temp3)
+```
+complex cumulative record
+```{r}
+seq(temp)
+```
+The apply() Command for Summaries on Rows or Columns
+```{r}
+margin.table(train$Age,1)
+```
+```{r}
+mean(train$PassengerId)
+```
+```{r}
+median(train$Pclass)
+```
+```{r}
+is.matrix(train)
+```
+Stem and Leaf Plot
+```{r}
+stem(train$Age)
+```
+```{r}
+hist(train$Pclass, col='gray75', main=NULL, xlab = 'pclass',
+ylim=c(0, 0.3), freq = FALSE)
+```
+```{r}
+names(train)
+```
+```{r}
+plot(train$Pclass)
+```
+
+```{r}
+runif(10)
+```
+runif()creates ten random numbers;
+```{r}
+runif(10)
+```
+punif is to create probability of 10 numbers
+```{r}
+punif(6, min = 0, max = 10)
+```
+
+
+
+
+```{r}
+# bind training & test data
+full  <- bind_rows(train, test) 
+str(full)
+dim(full)
+```
+
+The ratio of survived
+```{r}
+# check the number of survived(=1) in train data
+table(train$Survived)
+addmargins(table(train$Survived))
+
+# and ratio of survived(=1) in train data
+prop.table(table(train$Survived))
+addmargins(prop.table(table(train$Survived)))
+```
+```{r}
+# add Survived column into test with 418 non-survidved (=0)
+str(test)
+test$Survived <- rep(0, 418)
+dim(test)
+# that's a totally blind guess by making everyone pass away, but it is a simple tactics
+```
+
+```{r}
+# make the first submission with R, rate = 0.622
+submit <- data.frame(PassengerId = test$PassengerId, Survived = test$Survived)
+write.csv(submit, file = "theyallgone.csv", row.names = FALSE)
+```
+
+The ratio of survived by sex and age
+Getting the sex info
+```{r}
+# check the number of passegers by sex in train data
+table(train$Sex) # plain numbers
+addmargins(table(train$Sex)) # plain numbers with control sum (1.000000)
+
+# and ratio of passengers by sex in train data
+prop.table(table(train$Sex)) # proportion of sexes
+addmargins(prop.table(table(train$Sex))) # plain proportion with control sum (1.000000)
+```
+```{r}
+# check the total numbers of passed (=0) and survived (=1) by sex
+table(train$Survived, train$Sex)
+addmargins(prop.table(table(train$Survived, train$Sex),1))
+# (prop.table -> ratio by row =1, by column =2)
+```
+```{r}
+# assign "0" to all survived, except females getting "1"
+test$Survived <- 0
+test$Survived[test$Sex == 'female'] <- 1
+
+# check the changes
+head(test$Survived)
+head(test$Sex)
+table(test$Survived, test$Sex)
+```
+```{r}
+# make the second submission with R, rate = 0.76555
+submit <- data.frame(PassengerId = test$PassengerId, Survived = test$Survived)
+write.csv(submit, file = "theypartiallygone.csv", row.names = FALSE)
+```
+
+Getting the age info
+```{r}
+summary(train$Age)
+```
+
+```{r}
+# create a Child column for passengers aged under 18
+train$Child <- 0
+train$Child[train$Age < 18] <- 1
+str(train$Child)
+```
+```{r}
+# get the general digits for Child appearance in train data
+aggregate(Survived ~ Child, data = train, FUN = sum)
+```
+
